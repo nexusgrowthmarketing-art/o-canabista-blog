@@ -1223,6 +1223,37 @@ footer {
   font-size: 15px;
 }
 
+/* ===== BUSCA ===== */
+.nav-icon {
+  display: inline-flex;
+  align-items: center;
+}
+.search-form {
+  display: flex;
+  gap: 10px;
+  margin: 16px 0 6px;
+  max-width: 560px;
+}
+.search-form input {
+  flex: 1;
+  min-width: 0;
+  background: var(--bg-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 100px;
+  padding: 12px 18px;
+  color: var(--text-primary);
+  font-size: 15px;
+  font-family: var(--font-dm-sans), sans-serif;
+}
+.search-form input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.search-form button.estampa-buy {
+  border: none;
+  cursor: pointer;
+}
+
 /* ===== COMENTÁRIOS ===== */
 .comments {
   margin-top: 48px;

@@ -47,18 +47,19 @@ export default function Navbar() {
         </ul>
       </div>
       <div className="nav-right">
-        <svg
-          className="search-icon"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={2}
-          viewBox="0 0 24 24"
-          aria-label="Buscar"
-          role="img"
-        >
-          <circle cx="11" cy="11" r="8" />
-          <path d="m21 21-4.35-4.35" />
-        </svg>
+        <Link href="/buscar" className="nav-icon" aria-label="Buscar">
+          <svg
+            className="search-icon"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2}
+            viewBox="0 0 24 24"
+            role="img"
+          >
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.35-4.35" />
+          </svg>
+        </Link>
         <svg
           className="bell-icon"
           fill="none"
