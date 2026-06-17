@@ -1,3 +1,4 @@
+import AgeGate from "@/components/AgeGate";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 
@@ -9,6 +10,7 @@ export default function SiteLayout({
 }) {
   return (
     <>
+      <AgeGate />
       <Navbar />
       {children}
       <Footer />

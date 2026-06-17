@@ -1627,6 +1627,93 @@ footer {
   right: 0;
 }
 
+/* ===== AGE GATE (+18) ===== */
+.age-gate {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: radial-gradient(
+      ellipse at 50% 30%,
+      rgba(74, 222, 128, 0.12),
+      transparent 60%
+    ),
+    rgba(8, 8, 8, 0.97);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  backdrop-filter: blur(8px);
+}
+.age-card {
+  max-width: 440px;
+  text-align: center;
+  background: var(--bg-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 40px 32px;
+}
+.age-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-bebas), sans-serif;
+  font-size: 22px;
+  letter-spacing: 2px;
+  color: var(--accent);
+  margin-bottom: 18px;
+}
+.age-badge {
+  display: inline-block;
+  background: var(--accent);
+  color: var(--bg-primary);
+  font-family: var(--font-bebas), sans-serif;
+  font-size: 28px;
+  letter-spacing: 1px;
+  padding: 2px 14px;
+  border-radius: 8px;
+  margin-bottom: 14px;
+}
+.age-card h2 {
+  font-family: var(--font-bebas), sans-serif;
+  font-size: 30px;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+}
+.age-card p {
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+.age-card p strong {
+  color: var(--text-primary);
+}
+.age-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.age-actions .estampa-buy {
+  border: none;
+  cursor: pointer;
+  padding: 12px 22px;
+}
+.age-no {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: var(--text-secondary);
+  padding: 12px 22px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: var(--font-dm-sans), sans-serif;
+  font-size: 13px;
+}
+.age-no:hover {
+  border-color: var(--text-secondary);
+  color: var(--text-primary);
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
   .stories-bar {
