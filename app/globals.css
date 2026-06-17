@@ -1714,6 +1714,55 @@ footer {
   color: var(--text-primary);
 }
 
+/* ===== MENU MOBILE ===== */
+.nav-burger {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-size: 24px;
+  cursor: pointer;
+  line-height: 1;
+  width: 34px;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+}
+.mobile-menu {
+  position: fixed;
+  top: 58px;
+  left: 0;
+  right: 0;
+  z-index: 99;
+  background: rgba(10, 10, 10, 0.98);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  padding: 8px 20px 18px;
+  animation: mobileMenuIn 0.2s ease;
+}
+.mobile-menu a {
+  color: var(--text-primary);
+  text-decoration: none;
+  font-size: 17px;
+  padding: 14px 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+.mobile-menu a.active {
+  color: var(--accent);
+}
+@keyframes mobileMenuIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
   .stories-bar {
@@ -1732,6 +1781,12 @@ footer {
     padding: 14px 20px;
   }
   .nav-menu {
+    display: none;
+  }
+  .nav-burger {
+    display: inline-flex;
+  }
+  .bell-icon {
     display: none;
   }
   .hero {
