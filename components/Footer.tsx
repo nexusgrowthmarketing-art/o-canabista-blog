@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { siteConfig } from "@/lib/site";
 
 /** Rodapé global. */
 export default function Footer() {
@@ -43,7 +44,7 @@ export default function Footer() {
               <Link href="/newsletter">Newsletter</Link>
             </li>
             <li>
-              <Link href="/parcerias">Parcerias</Link>
+              <Link href="/contato">Parcerias</Link>
             </li>
             <li>
               <Link href="/admin">Painel</Link>
@@ -54,23 +55,30 @@ export default function Footer() {
           <h5>Social</h5>
           <ul>
             <li>
-              <a href="https://instagram.com" rel="noopener noreferrer" target="_blank">
-                Instagram
+              <a
+                href={siteConfig.social.instagram}
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                Instagram {siteConfig.creator.handle}
               </a>
             </li>
             <li>
-              <a href="https://youtube.com" rel="noopener noreferrer" target="_blank">
+              <a
+                href={siteConfig.social.youtube}
+                rel="noopener noreferrer"
+                target="_blank"
+              >
                 YouTube
               </a>
             </li>
             <li>
-              <a href="https://telegram.org" rel="noopener noreferrer" target="_blank">
-                Telegram
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com" rel="noopener noreferrer" target="_blank">
-                Twitter/X
+              <a
+                href={siteConfig.social.site}
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                ocanabista.info
               </a>
             </li>
           </ul>

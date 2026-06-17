@@ -19,7 +19,11 @@ export async function GET(req: Request) {
   }
   if (!isSupabaseConfigured()) {
     return NextResponse.json(
-      { error: "Supabase não configurado (faltam variáveis de ambiente)" },
+      {
+        error: "Supabase não configurado (faltam variáveis de ambiente)",
+        hasUrl: Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL),
+        hasKey: Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY),
+      },
       { status: 400 },
     );
   }

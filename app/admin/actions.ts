@@ -4,7 +4,9 @@ import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { getAnyPostBySlug, slugify } from "@/lib/posts";
+import { addStory, deleteStory } from "@/lib/stories";
 import {
+  deleteComment,
   deleteMemberById,
   deletePostBySlug,
   upsertMember,
@@ -103,6 +105,44 @@ export async function deletePost(form: FormData) {
     revalidateAll();
   }
   redirect("/admin/posts");
+}
+
+/** Publica um story 48h (por URL de imagem/vídeo). */
+export async function createStory(form: FormData) {
+  const mediaUrl = str(form, "mediaUrl");
+  if (!mediaUrl) redirect("/admin/stories?erro=url");
+  const isVideo = /\.(mp4|webm|mov)(\?.*)?$/i.test(mediaUrl);
+  addStory({
+    type: isVideo ? "video" : "image",
+    mediaUrl,
+    caption: str(form, "caption") || undefined,
+    nowMs: Date.now(),
+  });
+  revalidatePath("/admin/stories");
+  revalidateAll();
+  redirect("/admin/stories");
+}
+
+/** Remove um story. */
+export async function removeStory(form: FormData) {
+  const id = str(form, "id");
+  if (id) {
+    deleteStory(id);
+    revalidatePath("/admin/stories");
+    revalidateAll();
+  }
+  redirect("/admin/stories");
+}
+
+/** Remove um comentário (moderação). */
+export async function removeComment(form: FormData) {
+  const id = str(form, "id");
+  if (id) {
+    await deleteComment(id);
+    revalidatePath("/admin/comentarios");
+    revalidateAll();
+  }
+  redirect("/admin/comentarios");
 }
 
 /** Adiciona/convida um membro da equipe. */

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import Comments from "@/components/Comments";
 import ArticleJsonLd from "@/components/JsonLd";
 import VideoEmbed from "@/components/VideoEmbed";
 import { getAllPosts, getPostBySlug, slugifyCategory } from "@/lib/posts";
@@ -116,6 +117,8 @@ export default async function PostPage({ params }: PageProps) {
             Voltar para a Home
           </Link>
         </footer>
+
+        <Comments slug={post.slug} />
       </article>
     </main>
   );

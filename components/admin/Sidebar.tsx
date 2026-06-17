@@ -8,6 +8,8 @@ import type { TeamMember } from "@/lib/types";
 const NAV = [
   { href: "/admin", label: "Visão Geral", ico: "▥" },
   { href: "/admin/posts", label: "Posts", ico: "✎" },
+  { href: "/admin/stories", label: "Stories 48h", ico: "⚡" },
+  { href: "/admin/comentarios", label: "Comentários", ico: "💬" },
   { href: "/admin/equipe", label: "Equipe", ico: "👥" },
 ];
 

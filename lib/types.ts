@@ -89,3 +89,18 @@ export interface TeamMember {
   color: string;
   joinedAt: string; // ISO
 }
+
+// ===========================================================================
+// COMENTÁRIOS — interação da audiência nos posts.
+// ===========================================================================
+
+export type CommentStatus = "aprovado" | "pendente";
+
+export interface Comment {
+  id: string;
+  postSlug: string;
+  author: string;
+  text: string;
+  createdAt: string; // ISO
+  status: CommentStatus;
+}

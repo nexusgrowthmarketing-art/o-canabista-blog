@@ -106,6 +106,39 @@ export async function getCollections(): Promise<Collection[]> {
   })).filter((c) => c.posts.length > 0);
 }
 
+/** Normaliza texto para busca (minúsculo, sem acento). */
+function normalizar(s: string): string {
+  return s
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "");
+}
+
+/** Busca posts publicados por título, resumo, categoria ou tags. */
+export async function searchPosts(query: string): Promise<Post[]> {
+  const q = normalizar(query.trim());
+  if (!q) return [];
+  const posts = await getAllPosts();
+  return posts.filter((p) => {
+    const alvo = normalizar(
+      [p.title, p.excerpt, p.category, ...(p.tags ?? [])].join(" "),
+    );
+    return alvo.includes(q);
+  });
+}
+
+/** Posts relacionados: mesma categoria (exceto o atual), completados com recentes. */
+export async function getRelatedPosts(
+  slug: string,
+  category: string,
+  limit = 3,
+): Promise<Post[]> {
+  const posts = await getAllPosts();
+  const mesma = posts.filter((p) => p.slug !== slug && p.category === category);
+  const outros = posts.filter((p) => p.slug !== slug && p.category !== category);
+  return [...mesma, ...outros].slice(0, limit);
+}
+
 /** Normaliza nome de categoria para slug de URL (remove acentos). */
 export function slugifyCategory(name: string): string {
   return name

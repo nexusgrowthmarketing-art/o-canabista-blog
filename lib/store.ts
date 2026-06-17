@@ -2,7 +2,14 @@ import fs from "node:fs";
 import path from "node:path";
 import { seedPosts, seedTeam } from "./seed";
 import { getSupabaseAdmin } from "./supabase";
-import type { BadgeVariant, Post, PostStatus, Role, TeamMember } from "./types";
+import type {
+  BadgeVariant,
+  Comment,
+  Post,
+  PostStatus,
+  Role,
+  TeamMember,
+} from "./types";
 
 /**
  * Camada de dados. Duas implementações por trás da MESMA interface:
@@ -256,4 +263,75 @@ export async function deleteMemberById(id: string): Promise<void> {
     (m) => m.id !== id,
   );
   fileWrite(TEAM_FILE, team);
+}
+
+// ----- Estampas: curtidas (voto da audiência) -----
+const LIKES_FILE = path.join(DATA_DIR, "estampa-likes.json");
+
+export async function readEstampaLikes(): Promise<Record<string, number>> {
+  try {
+    if (fs.existsSync(LIKES_FILE)) {
+      return JSON.parse(fs.readFileSync(LIKES_FILE, "utf-8")) as Record<
+        string,
+        number
+      >;
+    }
+  } catch {
+    /* arquivo ausente/corrompido */
+  }
+  return {};
+}
+
+export async function addEstampaLike(slug: string): Promise<number> {
+  const likes = await readEstampaLikes();
+  likes[slug] = (likes[slug] ?? 0) + 1;
+  try {
+    ensureDir();
+    fs.writeFileSync(LIKES_FILE, JSON.stringify(likes, null, 2), "utf-8");
+  } catch {
+    /* FS somente-leitura em produção (até o Supabase entrar) */
+  }
+  return likes[slug];
+}
+
+// ----- Comentários -----
+const COMMENTS_FILE = path.join(DATA_DIR, "comments.json");
+
+export async function getAllComments(): Promise<Comment[]> {
+  try {
+    if (fs.existsSync(COMMENTS_FILE)) {
+      return JSON.parse(fs.readFileSync(COMMENTS_FILE, "utf-8")) as Comment[];
+    }
+  } catch {
+    /* arquivo ausente/corrompido */
+  }
+  return [];
+}
+
+export async function getCommentsByPost(slug: string): Promise<Comment[]> {
+  const all = await getAllComments();
+  return all
+    .filter((c) => c.postSlug === slug && c.status === "aprovado")
+    .sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt));
+}
+
+export async function addComment(comment: Comment): Promise<void> {
+  const all = await getAllComments();
+  all.unshift(comment);
+  try {
+    ensureDir();
+    fs.writeFileSync(COMMENTS_FILE, JSON.stringify(all, null, 2), "utf-8");
+  } catch {
+    /* FS somente-leitura em produção (até o Supabase entrar) */
+  }
+}
+
+export async function deleteComment(id: string): Promise<void> {
+  const all = (await getAllComments()).filter((c) => c.id !== id);
+  try {
+    ensureDir();
+    fs.writeFileSync(COMMENTS_FILE, JSON.stringify(all, null, 2), "utf-8");
+  } catch {
+    /* FS somente-leitura */
+  }
 }

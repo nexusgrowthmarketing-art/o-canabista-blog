@@ -1,6 +1,7 @@
 import FeaturedBanner from "@/components/FeaturedBanner";
 import Hero from "@/components/Hero";
 import Row from "@/components/Row";
+import StoriesBar from "@/components/StoriesBar";
 import { getCollections, getFeaturedPost } from "@/lib/posts";
 
 export default async function HomePage() {
@@ -9,6 +10,7 @@ export default async function HomePage() {
 
   return (
     <>
+      <StoriesBar />
       {featured && <Hero post={featured} />}
 
       <div className="content-section">

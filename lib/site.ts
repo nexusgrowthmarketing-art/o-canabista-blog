@@ -12,13 +12,25 @@ export const siteConfig = {
   locale: "pt-BR",
   // Imagem padrão de compartilhamento (coloque um /public/og-default.png 1200x630).
   ogImage: "/og-default.png",
+  // Criador / responsável pela marca (perfil real).
+  creator: {
+    name: "Marcos Meress",
+    handle: "@o.canabista",
+    role: "Criador de conteúdo digital",
+    sponsor: "@pufferfish.supply",
+  },
+  social: {
+    instagram: "https://www.instagram.com/o.canabista/",
+    youtube: "https://www.youtube.com/@o.canabista",
+    site: "https://ocanabista.info",
+  },
   nav: [
     { label: "Início", href: "/" },
     { label: "Cultivo", href: "/categoria/cultivo" },
     { label: "Variedades", href: "/categoria/variedades" },
     { label: "Cultura", href: "/categoria/cultura" },
     { label: "Medicinal", href: "/categoria/medicinal" },
-    { label: "Receitas", href: "/categoria/receitas" },
+    { label: "Estampas", href: "/estampas" },
   ],
 } as const;
 
