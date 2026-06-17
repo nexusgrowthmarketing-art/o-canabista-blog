@@ -1348,6 +1348,70 @@ footer {
   word-wrap: break-word;
 }
 
+/* ===== ENGAJAMENTO DO POST (progresso / compartilhar / relacionados) ===== */
+.reading-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--gold));
+  z-index: 200;
+  transition: width 0.1s linear;
+}
+.share {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 28px 0 4px;
+  padding: 16px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+.share-label {
+  color: var(--text-secondary);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-right: 4px;
+}
+.share-btn {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  padding: 8px 14px;
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font-dm-sans), sans-serif;
+  transition: all 0.2s;
+}
+.share-btn:hover {
+  transform: translateY(-2px);
+}
+.share-btn.wa:hover {
+  border-color: #25d366;
+  color: #25d366;
+}
+.share-btn.x:hover {
+  border-color: #fff;
+  color: #fff;
+}
+.share-btn.fb:hover {
+  border-color: #1877f2;
+  color: #60a5fa;
+}
+.share-btn.copy:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.related {
+  margin-top: 48px;
+}
+.related .section-head h1 {
+  font-size: 34px;
+}
+
 /* ===== STORIES 48h ===== */
 .stories-bar {
   position: relative;

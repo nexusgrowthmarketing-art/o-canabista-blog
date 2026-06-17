@@ -1,10 +1,18 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import Card from "@/components/Card";
 import Comments from "@/components/Comments";
 import ArticleJsonLd from "@/components/JsonLd";
+import ReadingProgress from "@/components/ReadingProgress";
+import ShareButtons from "@/components/ShareButtons";
 import VideoEmbed from "@/components/VideoEmbed";
-import { getAllPosts, getPostBySlug, slugifyCategory } from "@/lib/posts";
+import {
+  getAllPosts,
+  getPostBySlug,
+  getRelatedPosts,
+  slugifyCategory,
+} from "@/lib/posts";
 import { siteConfig } from "@/lib/site";
 
 interface PageProps {
@@ -64,8 +72,11 @@ export default async function PostPage({ params }: PageProps) {
   const post = await getPostBySlug(slug);
   if (!post) notFound();
 
+  const related = await getRelatedPosts(post.slug, post.category, 3);
+
   return (
     <main className="page-wrap">
+      <ReadingProgress />
       <ArticleJsonLd post={post} />
 
       <nav className="breadcrumb" aria-label="Trilha de navegação">
@@ -109,6 +120,8 @@ export default async function PostPage({ params }: PageProps) {
           dangerouslySetInnerHTML={{ __html: post.content ?? "" }}
         />
 
+        <ShareButtons title={post.title} />
+
         <footer className="post-footer">
           <span>
             Publicado em {dateFormatter.format(new Date(post.publishedAt))}
@@ -120,6 +133,19 @@ export default async function PostPage({ params }: PageProps) {
 
         <Comments slug={post.slug} />
       </article>
+
+      {related.length > 0 && (
+        <section className="related">
+          <div className="section-head">
+            <h1>Leia também</h1>
+          </div>
+          <div className="posts-grid">
+            {related.map((p) => (
+              <Card key={p.slug} post={p} />
+            ))}
+          </div>
+        </section>
+      )}
     </main>
   );
 }
