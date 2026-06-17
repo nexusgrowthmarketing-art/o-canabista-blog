@@ -41,6 +41,15 @@ export async function likeEstampa(slug: string): Promise<number> {
   return count;
 }
 
+export async function subscribeInline(
+  email: string,
+): Promise<{ ok: boolean }> {
+  const e = (email ?? "").toString().trim();
+  if (!e || !e.includes("@") || e.length < 5) return { ok: false };
+  append("subscribers.json", { email: e, at: new Date().toISOString() });
+  return { ok: true };
+}
+
 export async function sendContato(formData: FormData) {
   const nome = (formData.get("nome") ?? "").toString().trim();
   const email = (formData.get("email") ?? "").toString().trim();

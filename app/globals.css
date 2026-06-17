@@ -740,6 +740,44 @@ body {
   margin-bottom: 18px;
   font-size: 15px;
 }
+.nl-inline {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  max-width: 460px;
+}
+.nl-inline input {
+  flex: 1;
+  min-width: 200px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 4px;
+  padding: 12px 16px;
+  color: #fff;
+  font-size: 15px;
+  font-family: var(--font-dm-sans), sans-serif;
+}
+.nl-inline input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+.nl-inline input:focus {
+  outline: none;
+  border-color: #fff;
+}
+.nl-inline .btn-hero {
+  border: none;
+  cursor: pointer;
+}
+.nl-inline-ok {
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+}
+.nl-inline-err {
+  color: #ffd2d2;
+  font-size: 13px;
+  width: 100%;
+}
 
 /* ===== FOOTER ===== */
 footer {
