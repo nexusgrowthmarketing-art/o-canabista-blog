@@ -11,6 +11,7 @@ import {
   getAllPosts,
   getPostBySlug,
   getRelatedPosts,
+  slugify,
   slugifyCategory,
 } from "@/lib/posts";
 import { siteConfig } from "@/lib/site";
@@ -67,12 +68,28 @@ const dateFormatter = new Intl.DateTimeFormat("pt-BR", {
   year: "numeric",
 });
 
+/** Extrai os <h2> para um índice e injeta ids para ancoragem. */
+function buildToc(html: string): {
+  headings: { id: string; text: string }[];
+  html: string;
+} {
+  const headings: { id: string; text: string }[] = [];
+  const out = html.replace(/<h2[^>]*>([\s\S]*?)<\/h2>/g, (_m, inner) => {
+    const text = inner.replace(/<[^>]+>/g, "").trim();
+    const id = slugify(text) || `sec-${headings.length + 1}`;
+    headings.push({ id, text });
+    return `<h2 id="${id}">${inner}</h2>`;
+  });
+  return { headings, html: out };
+}
+
 export default async function PostPage({ params }: PageProps) {
   const { slug } = await params;
   const post = await getPostBySlug(slug);
   if (!post) notFound();
 
   const related = await getRelatedPosts(post.slug, post.category, 3);
+  const { headings, html } = buildToc(post.content ?? "");
 
   return (
     <main className="page-wrap">
@@ -115,9 +132,22 @@ export default async function PostPage({ params }: PageProps) {
           </div>
         )}
 
+        {headings.length >= 2 && (
+          <nav className="toc" aria-label="Índice do artigo">
+            <span className="toc-title">Neste artigo</span>
+            <ul>
+              {headings.map((h) => (
+                <li key={h.id}>
+                  <a href={`#${h.id}`}>{h.text}</a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )}
+
         <div
           className="post-content"
-          dangerouslySetInnerHTML={{ __html: post.content ?? "" }}
+          dangerouslySetInnerHTML={{ __html: html }}
         />
 
         <ShareButtons title={post.title} />
