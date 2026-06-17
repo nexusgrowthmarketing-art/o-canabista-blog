@@ -30,7 +30,10 @@ export const metadata: Metadata = {
   description: siteConfig.description,
   applicationName: siteConfig.name,
   authors: [{ name: siteConfig.name }],
-  alternates: { canonical: "/" },
+  alternates: {
+    canonical: "/",
+    types: { "application/rss+xml": `${siteConfig.url}/feed.xml` },
+  },
   openGraph: {
     type: "website",
     locale: "pt_BR",
