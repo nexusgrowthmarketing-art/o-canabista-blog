@@ -9,9 +9,9 @@ const fmt = new Intl.DateTimeFormat("pt-BR", {
   month: "short",
 });
 
-export default function AdminDashboard() {
-  const posts = getAllPostsAdmin();
-  const team = readTeam();
+export default async function AdminDashboard() {
+  const posts = await getAllPostsAdmin();
+  const team = await readTeam();
   const publicados = posts.filter((p) => p.status === "publicado").length;
   const rascunhos = posts.filter((p) => p.status === "rascunho").length;
   const recent = posts.slice(0, 5);

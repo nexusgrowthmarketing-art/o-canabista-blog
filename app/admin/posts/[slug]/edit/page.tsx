@@ -10,8 +10,11 @@ export default async function EditPostPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const post = getAnyPostBySlug(slug);
+  const [post, categories] = await Promise.all([
+    getAnyPostBySlug(slug),
+    getAllCategories(),
+  ]);
   if (!post) notFound();
 
-  return <PostEditor post={post} categories={getAllCategories()} />;
+  return <PostEditor post={post} categories={categories} />;
 }

@@ -38,12 +38,14 @@ export async function savePost(form: FormData) {
 
   let slug = slugify(str(form, "slug") || title);
   // Evita colisão de slug com OUTRO post.
-  const collision = getAnyPostBySlug(slug);
+  const collision = await getAnyPostBySlug(slug);
   if (collision && collision.slug !== originalSlug) {
     slug = `${slug}-${Date.now().toString().slice(-4)}`;
   }
 
-  const existing = originalSlug ? getAnyPostBySlug(originalSlug) : undefined;
+  const existing = originalSlug
+    ? await getAnyPostBySlug(originalSlug)
+    : undefined;
   const now = new Date().toISOString();
   const status = (str(form, "status") || "rascunho") as PostStatus;
 
@@ -85,10 +87,10 @@ export async function savePost(form: FormData) {
 
   // Se o slug mudou, remove o antigo antes de gravar o novo.
   if (originalSlug && originalSlug !== slug) {
-    deletePostBySlug(originalSlug);
+    await deletePostBySlug(originalSlug);
   }
 
-  upsertPost(post);
+  await upsertPost(post);
   revalidateAll();
   redirect("/admin/posts");
 }
@@ -97,7 +99,7 @@ export async function savePost(form: FormData) {
 export async function deletePost(form: FormData) {
   const slug = str(form, "slug");
   if (slug) {
-    deletePostBySlug(slug);
+    await deletePostBySlug(slug);
     revalidateAll();
   }
   redirect("/admin/posts");
@@ -118,7 +120,7 @@ export async function addMember(form: FormData) {
     color: AVATAR_COLORS[Math.floor(name.length % AVATAR_COLORS.length)],
     joinedAt: new Date().toISOString(),
   };
-  upsertMember(member);
+  await upsertMember(member);
   revalidatePath("/admin/equipe");
   redirect("/admin/equipe");
 }
@@ -127,7 +129,7 @@ export async function addMember(form: FormData) {
 export async function removeMember(form: FormData) {
   const id = str(form, "id");
   if (id) {
-    deleteMemberById(id);
+    await deleteMemberById(id);
     revalidatePath("/admin/equipe");
   }
   redirect("/admin/equipe");

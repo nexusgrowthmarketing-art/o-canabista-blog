@@ -4,8 +4,8 @@ import { readTeam } from "@/lib/store";
 
 export const dynamic = "force-dynamic";
 
-export default function AdminEquipe() {
-  const team = readTeam();
+export default async function AdminEquipe() {
+  const team = await readTeam();
 
   return (
     <>

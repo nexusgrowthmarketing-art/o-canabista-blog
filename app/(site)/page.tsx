@@ -3,13 +3,13 @@ import Hero from "@/components/Hero";
 import Row from "@/components/Row";
 import { getCollections, getFeaturedPost } from "@/lib/posts";
 
-export default function HomePage() {
-  const featured = getFeaturedPost();
-  const collections = getCollections();
+export default async function HomePage() {
+  const featured = await getFeaturedPost();
+  const collections = await getCollections();
 
   return (
     <>
-      <Hero post={featured} />
+      {featured && <Hero post={featured} />}
 
       <div className="content-section">
         {/* Primeira coleção */}

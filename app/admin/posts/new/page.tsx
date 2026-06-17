@@ -3,6 +3,7 @@ import { getAllCategories } from "@/lib/posts";
 
 export const dynamic = "force-dynamic";
 
-export default function NewPostPage() {
-  return <PostEditor categories={getAllCategories()} />;
+export default async function NewPostPage() {
+  const categories = await getAllCategories();
+  return <PostEditor categories={categories} />;
 }

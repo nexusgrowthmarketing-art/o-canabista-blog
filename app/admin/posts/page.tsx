@@ -10,8 +10,8 @@ const fmt = new Intl.DateTimeFormat("pt-BR", {
   year: "numeric",
 });
 
-export default function AdminPosts() {
-  const posts = getAllPostsAdmin();
+export default async function AdminPosts() {
+  const posts = await getAllPostsAdmin();
 
   return (
     <>

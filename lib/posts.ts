@@ -2,51 +2,58 @@ import { readPosts } from "./store";
 import type { Collection, Post } from "./types";
 
 /**
- * API de leitura consumida pelos componentes/páginas públicas.
- * Lê do "banco" em arquivo (lib/store.ts). Para migrar ao CMS, basta o store
- * passar a buscar do banco real — estas funções não mudam.
+ * API de leitura consumida pelos componentes/páginas.
+ * Assíncrona porque a fonte pode ser o Supabase. A implementação real
+ * (Supabase ou arquivo) fica em lib/store.ts.
  */
 
-export function getAllPosts(): Post[] {
-  return readPosts()
+export async function getAllPosts(): Promise<Post[]> {
+  const posts = await readPosts();
+  return posts
     .filter((p) => p.status === "publicado")
     .sort((a, b) => +new Date(b.publishedAt) - +new Date(a.publishedAt));
 }
 
 /** Todos os posts, inclusive rascunhos (uso do painel). */
-export function getAllPostsAdmin(): Post[] {
-  return readPosts().sort(
-    (a, b) => +new Date(b.updatedAt ?? b.publishedAt) - +new Date(a.updatedAt ?? a.publishedAt),
+export async function getAllPostsAdmin(): Promise<Post[]> {
+  const posts = await readPosts();
+  return posts.sort(
+    (a, b) =>
+      +new Date(b.updatedAt ?? b.publishedAt) -
+      +new Date(a.updatedAt ?? a.publishedAt),
   );
 }
 
-export function getFeaturedPost(): Post {
-  const posts = readPosts().filter((p) => p.status === "publicado");
+export async function getFeaturedPost(): Promise<Post | undefined> {
+  const posts = (await readPosts()).filter((p) => p.status === "publicado");
   return posts.find((p) => p.featured) ?? posts[0];
 }
 
-export function getPostBySlug(slug: string): Post | undefined {
-  return readPosts().find((p) => p.slug === slug && p.status === "publicado");
+export async function getPostBySlug(slug: string): Promise<Post | undefined> {
+  const posts = await readPosts();
+  return posts.find((p) => p.slug === slug && p.status === "publicado");
 }
 
 /** Versão do painel: encontra qualquer post (inclusive rascunho). */
-export function getAnyPostBySlug(slug: string): Post | undefined {
-  return readPosts().find((p) => p.slug === slug);
+export async function getAnyPostBySlug(slug: string): Promise<Post | undefined> {
+  const posts = await readPosts();
+  return posts.find((p) => p.slug === slug);
 }
 
-export function getPostsByCategory(categorySlug: string): Post[] {
+export async function getPostsByCategory(categorySlug: string): Promise<Post[]> {
   const slug = categorySlug.toLowerCase();
-  return getAllPosts().filter((p) => slugifyCategory(p.category) === slug);
+  const posts = await getAllPosts();
+  return posts.filter((p) => slugifyCategory(p.category) === slug);
 }
 
-export function getAllCategories(): string[] {
-  return Array.from(new Set(getAllPosts().map((p) => p.category)));
+export async function getAllCategories(): Promise<string[]> {
+  const posts = await getAllPosts();
+  return Array.from(new Set(posts.map((p) => p.category)));
 }
 
 /**
  * Coleções da home (as "fileiras"). Curadas por slug para manter o layout
- * estável independentemente da ordem do banco. Mais à frente isto pode virar
- * um campo no CMS (coleções gerenciáveis).
+ * estável independentemente da ordem do banco.
  */
 const COLLECTION_DEFS: { title: string; href: string; slugs: string[] }[] = [
   {
@@ -87,8 +94,8 @@ const COLLECTION_DEFS: { title: string; href: string; slugs: string[] }[] = [
   },
 ];
 
-export function getCollections(): Collection[] {
-  const published = getAllPosts();
+export async function getCollections(): Promise<Collection[]> {
+  const published = await getAllPosts();
   const bySlug = new Map(published.map((p) => [p.slug, p]));
   return COLLECTION_DEFS.map((def) => ({
     title: def.title,

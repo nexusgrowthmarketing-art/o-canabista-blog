@@ -12,15 +12,17 @@ interface PageProps {
 }
 
 /** Pré-renderiza as categorias que já têm posts. */
-export function generateStaticParams() {
-  return getAllCategories().map((category) => ({
+export async function generateStaticParams() {
+  const categories = await getAllCategories();
+  return categories.map((category) => ({
     slug: slugifyCategory(category),
   }));
 }
 
 /** Nome legível da categoria a partir do slug. */
-function categoryTitle(slug: string): string {
-  const match = getAllCategories().find(
+async function categoryTitle(slug: string): Promise<string> {
+  const categories = await getAllCategories();
+  const match = categories.find(
     (c) => slugifyCategory(c) === slug.toLowerCase(),
   );
   if (match) return match;
@@ -31,7 +33,7 @@ export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const title = categoryTitle(slug);
+  const title = await categoryTitle(slug);
   return {
     title,
     description: `Artigos de ${title} no ${siteConfig.name}: ${siteConfig.tagline}.`,
@@ -41,8 +43,8 @@ export async function generateMetadata({
 
 export default async function CategoryPage({ params }: PageProps) {
   const { slug } = await params;
-  const title = categoryTitle(slug);
-  const posts = getPostsByCategory(slug);
+  const title = await categoryTitle(slug);
+  const posts = await getPostsByCategory(slug);
 
   return (
     <main className="page-wrap">

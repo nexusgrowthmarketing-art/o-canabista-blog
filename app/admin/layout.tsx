@@ -8,12 +8,12 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function AdminLayout({
+export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const team = readTeam();
+  const team = await readTeam();
   const owner = team.find((m) => m.role === "Administrador") ?? team[0];
 
   return (
