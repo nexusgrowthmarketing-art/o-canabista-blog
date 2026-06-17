@@ -37,6 +37,7 @@ export default function Card({ post }: { post: Post }) {
         )}
       </div>
       <div className="card-overlay" />
+      <span className="card-time">{post.readTime} min</span>
       <div className="card-content">
         <span className={badgeClass}>{post.badgeLabel}</span>
         <h3 className="card-title">{post.title}</h3>
