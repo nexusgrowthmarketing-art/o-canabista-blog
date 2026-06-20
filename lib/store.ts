@@ -5,6 +5,7 @@ import { getSupabaseAdmin } from "./supabase";
 import type {
   BadgeVariant,
   Comment,
+  CommentStatus,
   Post,
   PostStatus,
   Role,
@@ -140,6 +141,37 @@ function memberToRow(m: TeamMember): TeamRow {
   };
 }
 
+interface CommentRow {
+  id: string;
+  post_slug: string;
+  author: string;
+  text: string;
+  status: string;
+  created_at: string;
+}
+
+function rowToComment(r: CommentRow): Comment {
+  return {
+    id: r.id,
+    postSlug: r.post_slug,
+    author: r.author,
+    text: r.text,
+    status: r.status as CommentStatus,
+    createdAt: r.created_at,
+  };
+}
+
+function commentToRow(c: Comment): CommentRow {
+  return {
+    id: c.id,
+    post_slug: c.postSlug,
+    author: c.author,
+    text: c.text,
+    status: c.status,
+    created_at: c.createdAt,
+  };
+}
+
 // ===========================================================================
 // Fallback em arquivo (dev sem Supabase)
 // ===========================================================================
@@ -269,6 +301,16 @@ export async function deleteMemberById(id: string): Promise<void> {
 const LIKES_FILE = path.join(DATA_DIR, "estampa-likes.json");
 
 export async function readEstampaLikes(): Promise<Record<string, number>> {
+  const sb = getSupabaseAdmin();
+  if (sb) {
+    const { data, error } = await sb.from("estampa_likes").select("slug, count");
+    if (error) throw new Error(`Supabase readEstampaLikes: ${error.message}`);
+    const out: Record<string, number> = {};
+    for (const r of data as { slug: string; count: number }[]) {
+      out[r.slug] = Number(r.count);
+    }
+    return out;
+  }
   try {
     if (fs.existsSync(LIKES_FILE)) {
       return JSON.parse(fs.readFileSync(LIKES_FILE, "utf-8")) as Record<
@@ -283,6 +325,20 @@ export async function readEstampaLikes(): Promise<Record<string, number>> {
 }
 
 export async function addEstampaLike(slug: string): Promise<number> {
+  const sb = getSupabaseAdmin();
+  if (sb) {
+    const { data } = await sb
+      .from("estampa_likes")
+      .select("count")
+      .eq("slug", slug)
+      .maybeSingle();
+    const next = Number(data?.count ?? 0) + 1;
+    const { error } = await sb
+      .from("estampa_likes")
+      .upsert({ slug, count: next }, { onConflict: "slug" });
+    if (error) throw new Error(`Supabase addEstampaLike: ${error.message}`);
+    return next;
+  }
   const likes = await readEstampaLikes();
   likes[slug] = (likes[slug] ?? 0) + 1;
   try {
@@ -298,6 +354,15 @@ export async function addEstampaLike(slug: string): Promise<number> {
 const COMMENTS_FILE = path.join(DATA_DIR, "comments.json");
 
 export async function getAllComments(): Promise<Comment[]> {
+  const sb = getSupabaseAdmin();
+  if (sb) {
+    const { data, error } = await sb
+      .from("comments")
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (error) throw new Error(`Supabase getAllComments: ${error.message}`);
+    return (data as CommentRow[]).map(rowToComment);
+  }
   try {
     if (fs.existsSync(COMMENTS_FILE)) {
       return JSON.parse(fs.readFileSync(COMMENTS_FILE, "utf-8")) as Comment[];
@@ -309,6 +374,17 @@ export async function getAllComments(): Promise<Comment[]> {
 }
 
 export async function getCommentsByPost(slug: string): Promise<Comment[]> {
+  const sb = getSupabaseAdmin();
+  if (sb) {
+    const { data, error } = await sb
+      .from("comments")
+      .select("*")
+      .eq("post_slug", slug)
+      .eq("status", "aprovado")
+      .order("created_at", { ascending: false });
+    if (error) throw new Error(`Supabase getCommentsByPost: ${error.message}`);
+    return (data as CommentRow[]).map(rowToComment);
+  }
   const all = await getAllComments();
   return all
     .filter((c) => c.postSlug === slug && c.status === "aprovado")
@@ -316,6 +392,12 @@ export async function getCommentsByPost(slug: string): Promise<Comment[]> {
 }
 
 export async function addComment(comment: Comment): Promise<void> {
+  const sb = getSupabaseAdmin();
+  if (sb) {
+    const { error } = await sb.from("comments").insert(commentToRow(comment));
+    if (error) throw new Error(`Supabase addComment: ${error.message}`);
+    return;
+  }
   const all = await getAllComments();
   all.unshift(comment);
   try {
@@ -327,6 +409,12 @@ export async function addComment(comment: Comment): Promise<void> {
 }
 
 export async function deleteComment(id: string): Promise<void> {
+  const sb = getSupabaseAdmin();
+  if (sb) {
+    const { error } = await sb.from("comments").delete().eq("id", id);
+    if (error) throw new Error(`Supabase deleteComment: ${error.message}`);
+    return;
+  }
   const all = (await getAllComments()).filter((c) => c.id !== id);
   try {
     ensureDir();

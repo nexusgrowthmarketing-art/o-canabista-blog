@@ -1,14 +1,14 @@
 import fs from "node:fs";
 import path from "node:path";
+import { getSupabaseAdmin } from "./supabase";
 
 /**
  * Stories 48h (estilo Instagram). O Marcos sobe, fica 48h no ar e some sozinho.
  * Aparecem na "head" da home.
  *
- * Armazenamento em arquivo (content/stories.json). Funciona 100% em dev;
- * em produção (FS somente-leitura) a leitura funciona (mostra os exemplos e o
- * que estiver no arquivo versionado) e a escrita migra para o banco/Storage
- * do Supabase junto com o resto.
+ * Armazenamento: Supabase (tabela `stories`) quando configurado; senão, arquivo
+ * (content/stories.json) para o dev. Os EXEMPLOS abaixo são fixos no código e
+ * sempre aparecem na vitrine — não ficam no banco.
  */
 
 export type StoryType = "image" | "video" | "gradient";
@@ -66,7 +66,49 @@ const SAMPLES: Story[] = [
   },
 ];
 
-function readFile(): Story[] {
+// ----- Mapeadores (banco snake_case <-> app camelCase) -----
+interface StoryRow {
+  id: string;
+  type: string;
+  media_url: string | null;
+  variant: string | null;
+  emoji: string | null;
+  caption: string | null;
+  created_at: string;
+  expires_at: string;
+  sample: boolean;
+}
+
+function rowToStory(r: StoryRow): Story {
+  return {
+    id: r.id,
+    type: r.type as StoryType,
+    mediaUrl: r.media_url ?? undefined,
+    variant: r.variant ?? undefined,
+    emoji: r.emoji ?? undefined,
+    caption: r.caption ?? undefined,
+    createdAt: r.created_at,
+    expiresAt: r.expires_at,
+    sample: r.sample || undefined,
+  };
+}
+
+function storyToRow(s: Story): StoryRow {
+  return {
+    id: s.id,
+    type: s.type,
+    media_url: s.mediaUrl ?? null,
+    variant: s.variant ?? null,
+    emoji: s.emoji ?? null,
+    caption: s.caption ?? null,
+    created_at: s.createdAt,
+    expires_at: s.expiresAt,
+    sample: s.sample ?? false,
+  };
+}
+
+// ----- Fallback em arquivo (dev sem Supabase) -----
+function readFileStories(): Story[] {
   try {
     if (fs.existsSync(STORIES_FILE)) {
       return JSON.parse(fs.readFileSync(STORIES_FILE, "utf-8")) as Story[];
@@ -77,31 +119,47 @@ function readFile(): Story[] {
   return [];
 }
 
-function writeFile(stories: Story[]) {
+function writeFileStories(stories: Story[]) {
   fs.mkdirSync(DATA_DIR, { recursive: true });
   fs.writeFileSync(STORIES_FILE, JSON.stringify(stories, null, 2), "utf-8");
 }
 
+/** Stories armazenados (sem os exemplos) — Supabase OU arquivo. */
+async function readStored(): Promise<Story[]> {
+  const sb = getSupabaseAdmin();
+  if (sb) {
+    const { data, error } = await sb
+      .from("stories")
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (error) throw new Error(`Supabase readStories: ${error.message}`);
+    return (data as StoryRow[]).map(rowToStory);
+  }
+  return readFileStories();
+}
+
 /** Stories ativos (não expirados), mais recentes primeiro, com os exemplos. */
-export function getActiveStories(nowMs: number): Story[] {
-  const reais = readFile().filter((s) => +new Date(s.expiresAt) > nowMs);
+export async function getActiveStories(nowMs: number): Promise<Story[]> {
+  const reais = (await readStored()).filter(
+    (s) => +new Date(s.expiresAt) > nowMs,
+  );
   const todos = [...reais, ...SAMPLES];
   return todos.sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt));
 }
 
 /** Todos (uso do painel), inclusive expirados, exceto exemplos. */
-export function getAllStories(): Story[] {
-  return readFile().sort(
+export async function getAllStories(): Promise<Story[]> {
+  return (await readStored()).sort(
     (a, b) => +new Date(b.createdAt) - +new Date(a.createdAt),
   );
 }
 
-export function addStory(input: {
+export async function addStory(input: {
   type: StoryType;
   mediaUrl?: string;
   caption?: string;
   nowMs: number;
-}): Story {
+}): Promise<Story> {
   const created = new Date(input.nowMs);
   const expires = new Date(input.nowMs + 48 * 60 * 60 * 1000);
   const story: Story = {
@@ -112,20 +170,34 @@ export function addStory(input: {
     createdAt: created.toISOString(),
     expiresAt: expires.toISOString(),
   };
-  const stories = readFile();
+
+  const sb = getSupabaseAdmin();
+  if (sb) {
+    const { error } = await sb.from("stories").insert(storyToRow(story));
+    if (error) throw new Error(`Supabase addStory: ${error.message}`);
+    return story;
+  }
+
+  const stories = readFileStories();
   stories.unshift(story);
   try {
-    writeFile(stories);
+    writeFileStories(stories);
   } catch {
     /* FS somente-leitura em produção */
   }
   return story;
 }
 
-export function deleteStory(id: string) {
-  const stories = readFile().filter((s) => s.id !== id);
+export async function deleteStory(id: string): Promise<void> {
+  const sb = getSupabaseAdmin();
+  if (sb) {
+    const { error } = await sb.from("stories").delete().eq("id", id);
+    if (error) throw new Error(`Supabase deleteStory: ${error.message}`);
+    return;
+  }
+  const stories = readFileStories().filter((s) => s.id !== id);
   try {
-    writeFile(stories);
+    writeFileStories(stories);
   } catch {
     /* FS somente-leitura */
   }

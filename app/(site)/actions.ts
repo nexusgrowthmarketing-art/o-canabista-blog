@@ -5,12 +5,12 @@ import path from "node:path";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { addEstampaLike } from "@/lib/store";
+import { getSupabaseAdmin } from "@/lib/supabase";
 
 /**
  * Ações do site público: newsletter e contato.
- * Gravam em arquivo (best-effort). Em produção (FS somente-leitura) a gravação
- * é ignorada e o usuário ainda recebe a confirmação — depois plugamos um
- * serviço de e-mail/CRM real (Resend, Mailchimp, etc.).
+ * Gravam no Supabase quando configurado; senão em arquivo (best-effort).
+ * Em qualquer falha o usuário ainda recebe a confirmação — não travamos a UX.
  */
 function append(file: string, entry: Record<string, unknown>) {
   try {
@@ -27,10 +27,40 @@ function append(file: string, entry: Record<string, unknown>) {
   }
 }
 
+/** Salva um assinante (Supabase OU arquivo). Best-effort: nunca lança. */
+async function saveSubscriber(email: string) {
+  const sb = getSupabaseAdmin();
+  if (sb) {
+    try {
+      const { error } = await sb
+        .from("subscribers")
+        .upsert({ email }, { onConflict: "email" });
+      if (!error) return;
+    } catch {
+      /* cai no arquivo */
+    }
+  }
+  append("subscribers.json", { email, at: new Date().toISOString() });
+}
+
+/** Salva uma mensagem de contato (Supabase OU arquivo). Best-effort. */
+async function saveMessage(m: { nome: string; email: string; mensagem: string }) {
+  const sb = getSupabaseAdmin();
+  if (sb) {
+    try {
+      const { error } = await sb.from("messages").insert(m);
+      if (!error) return;
+    } catch {
+      /* cai no arquivo */
+    }
+  }
+  append("messages.json", { ...m, at: new Date().toISOString() });
+}
+
 export async function subscribeNewsletter(formData: FormData) {
   const email = (formData.get("email") ?? "").toString().trim();
   if (email) {
-    append("subscribers.json", { email, at: new Date().toISOString() });
+    await saveSubscriber(email);
   }
   redirect("/newsletter?ok=1");
 }
@@ -46,7 +76,7 @@ export async function subscribeInline(
 ): Promise<{ ok: boolean }> {
   const e = (email ?? "").toString().trim();
   if (!e || !e.includes("@") || e.length < 5) return { ok: false };
-  append("subscribers.json", { email: e, at: new Date().toISOString() });
+  await saveSubscriber(e);
   return { ok: true };
 }
 
@@ -55,7 +85,7 @@ export async function sendContato(formData: FormData) {
   const email = (formData.get("email") ?? "").toString().trim();
   const mensagem = (formData.get("mensagem") ?? "").toString().trim();
   if (nome && email && mensagem) {
-    append("messages.json", { nome, email, mensagem, at: new Date().toISOString() });
+    await saveMessage({ nome, email, mensagem });
   }
   redirect("/contato?ok=1");
 }

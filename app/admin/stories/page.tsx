@@ -12,9 +12,9 @@ function restante(expiresAt: string, now: number): string {
   return `expira em ${h}h${m.toString().padStart(2, "0")}`;
 }
 
-export default function AdminStories() {
+export default async function AdminStories() {
   const now = Date.now();
-  const stories = getAllStories();
+  const stories = await getAllStories();
 
   return (
     <>

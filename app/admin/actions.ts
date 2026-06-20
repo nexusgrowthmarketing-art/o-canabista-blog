@@ -112,7 +112,7 @@ export async function createStory(form: FormData) {
   const mediaUrl = str(form, "mediaUrl");
   if (!mediaUrl) redirect("/admin/stories?erro=url");
   const isVideo = /\.(mp4|webm|mov)(\?.*)?$/i.test(mediaUrl);
-  addStory({
+  await addStory({
     type: isVideo ? "video" : "image",
     mediaUrl,
     caption: str(form, "caption") || undefined,
@@ -127,7 +127,7 @@ export async function createStory(form: FormData) {
 export async function removeStory(form: FormData) {
   const id = str(form, "id");
   if (id) {
-    deleteStory(id);
+    await deleteStory(id);
     revalidatePath("/admin/stories");
     revalidateAll();
   }
