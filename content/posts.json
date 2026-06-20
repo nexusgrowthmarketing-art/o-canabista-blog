@@ -1,5 +1,35 @@
 [
   {
+    "slug": "terpenos-o-segredo-do-aroma-e-do-efeito",
+    "title": "Terpenos: o segredo do aroma e do efeito",
+    "subtitle": "Por que duas flores diferentes podem cheirar — e agir — de formas distintas",
+    "excerpt": "Entenda o que são os terpenos, como moldam aroma e sabor da cannabis e por que importam tanto quanto os canabinoides.",
+    "content": "<p>O aroma inconfundível da cannabis não vem por acaso. Por trás de cada nota cítrica, terrosa ou amadeirada estão os <strong>terpenos</strong> — compostos aromáticos que a planta produz e que fazem muito mais do que perfumar.</p>\r\n<h2>O que são terpenos</h2>\r\n<p>Terpenos são óleos essenciais presentes em diversas plantas. Na cannabis, eles definem o perfil de cheiro e sabor de cada variedade e podem influenciar a forma como sentimos os efeitos.</p>\r\n<h2>Os principais terpenos</h2>\r\n<ul>\r\n<li><strong>Mirceno</strong> — terroso e relaxante, o mais comum nas variedades.</li>\r\n<li><strong>Limoneno</strong> — cítrico, associado a um humor mais leve.</li>\r\n<li><strong>Pineno</strong> — aroma de pinho, lembra clareza e foco.</li>\r\n<li><strong>Linalol</strong> — floral, o mesmo da lavanda.</li>\r\n</ul>\r\n<h2>O efeito entourage</h2>\r\n<p>Terpenos e canabinoides agem em conjunto — fenômeno chamado de <strong>efeito entourage</strong>. É por isso que duas flores com o mesmo teor de THC podem proporcionar experiências completamente diferentes.</p>",
+    "coverVariant": "img-3",
+    "leaf": "🍃",
+    "videoUrl": "https://www.youtube.com/watch?v=aqz-KE-bpKQ",
+    "featured": false,
+    "category": "Cultura",
+    "tags": [
+      "terpenos",
+      "aroma",
+      "ciência"
+    ],
+    "badgeLabel": "Novo",
+    "badgeVariant": "default",
+    "author": {
+      "name": "Redação O Canabista",
+      "slug": "redacao"
+    },
+    "rating": 9,
+    "readTime": 6,
+    "status": "publicado",
+    "publishedAt": "2026-06-17T15:30:13.203Z",
+    "updatedAt": "2026-06-17T15:30:13.203Z",
+    "seoTitle": "Terpenos: o segredo do aroma e do efeito",
+    "seoDescription": "Entenda o que são os terpenos, como moldam aroma e sabor da cannabis e por que importam tanto quanto os canabinoides."
+  },
+  {
     "slug": "guia-definitivo-cultivo-indoor",
     "title": "Guia Definitivo do Cultivo Indoor",
     "subtitle": "Da germinação à colheita",

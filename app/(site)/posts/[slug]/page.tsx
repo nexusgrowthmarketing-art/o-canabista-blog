@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import Card from "@/components/Card";
 import Comments from "@/components/Comments";
-import ArticleJsonLd from "@/components/JsonLd";
+import ArticleJsonLd, { BreadcrumbJsonLd } from "@/components/JsonLd";
 import ReadingProgress from "@/components/ReadingProgress";
 import ShareButtons from "@/components/ShareButtons";
 import VideoEmbed from "@/components/VideoEmbed";
@@ -95,6 +95,7 @@ export default async function PostPage({ params }: PageProps) {
     <main className="page-wrap">
       <ReadingProgress />
       <ArticleJsonLd post={post} />
+      <BreadcrumbJsonLd post={post} />
 
       <nav className="breadcrumb" aria-label="Trilha de navegação">
         <Link href="/">Início</Link>

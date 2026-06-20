@@ -1922,3 +1922,34 @@ footer {
     padding-right: 20px;
   }
 }
+
+/* Botão flutuante "voltar ao topo" */
+.back-to-top {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 50;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: var(--bg-primary);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.back-to-top:hover {
+  transform: translateY(-2px);
+  background: var(--accent-dark);
+}
+
+@media (max-width: 600px) {
+  .back-to-top {
+    right: 14px;
+    bottom: 14px;
+  }
+}

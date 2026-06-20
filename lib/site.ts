@@ -10,8 +10,9 @@ export const siteConfig = {
   // Definida via env em produção (NEXT_PUBLIC_SITE_URL). Fallback só para dev.
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://ocanabista.com.br",
   locale: "pt-BR",
-  // Imagem padrão de compartilhamento (coloque um /public/og-default.png 1200x630).
-  ogImage: "/og-default.png",
+  // Imagem padrão de compartilhamento (1200x630). Gerada dinamicamente em /og
+  // via next/og (PNG real, compatível com WhatsApp/Facebook/X).
+  ogImage: "/og",
   // Criador / responsável pela marca (perfil real).
   creator: {
     name: "Marcos Meress",

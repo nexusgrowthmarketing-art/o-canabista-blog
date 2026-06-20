@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Bebas_Neue, DM_Sans } from "next/font/google";
 import { siteConfig } from "@/lib/site";
 import "./globals.css";
@@ -54,6 +54,11 @@ export const metadata: Metadata = {
     follow: true,
     googleBot: { index: true, follow: true, "max-image-preview": "large" },
   },
+};
+
+/** Cor da barra do navegador no mobile (combina com o tema escuro). */
+export const viewport: Viewport = {
+  themeColor: "#0a0a0a",
 };
 
 export default function RootLayout({

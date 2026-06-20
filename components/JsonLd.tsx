@@ -1,3 +1,4 @@
+import { slugifyCategory } from "@/lib/posts";
 import { siteConfig } from "@/lib/site";
 import type { Post } from "@/lib/types";
 
@@ -33,6 +34,40 @@ export default function ArticleJsonLd({ post }: { post: Post }) {
     mainEntityOfPage: { "@type": "WebPage", "@id": url },
     articleSection: post.category,
     keywords: post.tags.join(", "),
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+    />
+  );
+}
+
+/**
+ * Trilha de navegação estruturada (schema.org/BreadcrumbList) para os posts.
+ * Ajuda o Google a exibir a trilha "Início › Categoria › Post" no resultado.
+ */
+export function BreadcrumbJsonLd({ post }: { post: Post }) {
+  const base = siteConfig.url;
+  const items = [
+    { name: "Início", url: base },
+    {
+      name: post.category,
+      url: `${base}/categoria/${slugifyCategory(post.category)}`,
+    },
+    { name: post.title, url: `${base}/posts/${post.slug}` },
+  ];
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((it, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: it.name,
+      item: it.url,
+    })),
   };
 
   return (
