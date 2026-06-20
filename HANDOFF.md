@@ -46,31 +46,41 @@ npx vercel deploy --prod --yes
 - `content/posts.json` (posts), `content/team.json` (equipe), `content/comments.json`, `content/estampa-likes.json`, `content/stories.json`, `content/subscribers.json`.
 - Stories: `lib/stories.ts` · Estampas: `lib/estampas.ts` · Config/identidade: `lib/site.ts`.
 
-## ⚠️ PENDÊNCIA CRÍTICA (produção)
+## ✅ PENDÊNCIA CRÍTICA — RESOLVIDA (2026-06-20)
 
-A env var **`SUPABASE_SERVICE_ROLE_KEY` na Vercel está VAZIA** (`hasKey:false`). Por isso a produção usa o fallback em arquivo: o site **mostra tudo**, mas as **escritas do painel / curtidas / comentários / stories NÃO persistem online**.
+Supabase **ligado e persistindo em produção**. A `SUPABASE_SERVICE_ROLE_KEY` foi
+recriada **pela Vercel CLI** (o toggle "Sensitive" do painel salvava vazio — bug
+contornado pela CLI). Diagnóstico: `GET /api/seed?token=canabista` → `hasKey:true`.
 
-- Tabelas `posts` e `team` já criadas no Supabase; falta a chave + o schema completo.
-- Diagnóstico: `GET /api/seed?token=canabista` → retorna `hasUrl` / `hasKey`.
-- **Como resolver:**
-  1. Vercel → Settings → Environment Variables → editar/recriar `SUPABASE_SERVICE_ROLE_KEY`.
-     **DESLIGAR o toggle "Sensitive"** (senão o campo mascara e cola vazio — foi o erro anterior).
-  2. Valor: Supabase → Settings → API Keys → aba "Legacy" → `service_role` → Reveal → copiar.
-  3. Save → Redeploy.
-  4. Rodar o schema completo `supabase/schema.sql` no SQL Editor + popular: `GET /api/seed?token=canabista`.
-  5. Definir também `NEXT_PUBLIC_SITE_URL` com o domínio final (hoje cai no placeholder em sitemap/canonical/RSS).
+- **Persistência TOTAL**: `posts`, `team`, `comments`, `estampa_likes`, `stories`,
+  `subscribers`, `messages` — todas no Supabase. `lib/store.ts`, `lib/stories.ts` e
+  `app/(site)/actions.ts` usam Supabase quando configurado; senão, arquivo (dev).
+- Schemas: `supabase/schema.sql` (posts/team) + `supabase/schema-extra.sql` (resto).
+- `NEXT_PUBLIC_SITE_URL` = `https://o-canabista-blog.vercel.app` (sitemap/canonical/RSS ok).
+
+### 🔐 Follow-up de segurança
+A `service_role` key foi exposta no chat ao destravar a produção → **rotacionar**:
+Supabase → Settings → API Keys → Roll/Regenerate; depois `vercel env rm/add`
+`SUPABASE_SERVICE_ROLE_KEY` (Prod+Preview) + redeploy.
+
+### ⏳ Pendência aberta
+**Domínio final**: hoje só existe o `.vercel.app`. Quando plugar `ocanabista.com.br`
+(ou `.info`): adicionar o domínio no projeto Vercel + atualizar `NEXT_PUBLIC_SITE_URL`
+para ele + redeploy.
 
 ## Já feito
 
-Stories 48h · posts relacionados · compartilhar · barra de progresso de leitura · busca (`/buscar`) · RSS (`/feed.xml`) · **19 artigos reais** · age gate +18 · menu mobile (hambúrguer) · índice/TOC do artigo · newsletter inline na home · badge de tempo de leitura no card · `:focus-visible` (acessibilidade) · identidade real do Marcos · backups (tags `backup-*`).
+Stories 48h · posts relacionados · compartilhar · barra de progresso de leitura · busca (`/buscar`) · RSS (`/feed.xml`) · **20 artigos reais** (Terpenos incluído) · age gate +18 · menu mobile (hambúrguer) · índice/TOC do artigo · newsletter inline na home · badge de tempo de leitura no card · `:focus-visible` (acessibilidade) · identidade real do Marcos · backups (tags `backup-*`).
+
+**2026-06-20:** Supabase ligado (persistência total) · `NEXT_PUBLIC_SITE_URL` setada · imagem OG dinâmica em `/og` (next/og, PNG real) · JSON-LD **BreadcrumbList** no post · botão **voltar-ao-topo** · `meta theme-color` · artigo **Terpenos** publicado.
 
 ## Fila (próximos — UMA melhoria por vez, sempre com build verificado)
 
-1. `/public/og-default.svg` (1200×630, fundo escuro, logo "C" verde + "O CANABISTA") e `lib/site.ts` → `ogImage = "/og-default.svg"`.
-2. JSON-LD **BreadcrumbList** na página de post.
+1. **Rotacionar a `service_role`** (ver follow-up de segurança acima).
+2. **Domínio final** + `NEXT_PUBLIC_SITE_URL` (ver pendência aberta acima).
 3. Revisão **mobile** (Chrome 390×800) + micro-ajustes.
-4. Incrementais: link "voltar ao topo"; `meta theme-color`; OG por post (campo `socialImage` já suportado); paginação na categoria se crescer.
-5. **Conectar o Supabase de verdade** (pendência crítica acima) — destrava a persistência em produção.
+4. Incrementais: OG por post (campo `socialImage` já suportado); paginação na categoria se crescer.
+5. Upload de arquivo (imagem/vídeo) para stories/estampas via **Supabase Storage** (hoje é por URL).
 
 ## Restrições
 
